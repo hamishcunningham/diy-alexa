@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include <driver/i2s.h>
 #include <esp_task_wdt.h>
+#include <Wire.h>
 #include "I2SMicSampler.h"
 #include "ADCSampler.h"
 #include "I2SOutput.h"
