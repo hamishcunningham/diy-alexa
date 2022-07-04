@@ -15,7 +15,8 @@
 #include <WiFiMulti.h>
 #include <dotstar_wing.h>
 
-// MAC address ///////////////////////////////////////////////////////////////
+// MAC address etc. //////////////////////////////////////////////////////////
+void sayHi();
 extern char MAC_ADDRESS[];
 void getMAC(char *);
 char MAC_ADDRESS[13]; // MAC addresses are 12 chars, plus the NULL terminator
@@ -107,8 +108,7 @@ void setup()
       delay(200);
     }
   }
-  getMAC(MAC_ADDRESS);            // store the MAC address as a chip identifier
-  Serial.printf("ESP32 MAC = %s\n", MAC_ADDRESS); // print the ESP's "ID"
+  sayHi();
 
   Serial.printf("ssid=%s\n", WIFI_SSID);
   if (WiFi.waitForConnectResult() != WL_CONNECTED)
@@ -195,4 +195,65 @@ void getMAC(char *buf) { // the MAC is 6 bytes, so needs careful conversion...
     buf[i + 1] = rev[j];
   }
   buf[12] = '\0';
+}
+
+void sayHi() {
+  printf("\nhi\n");
+  getMAC(MAC_ADDRESS);            // store the MAC address as a chip identifier
+  Serial.printf("ESP32 MAC = %s\n", MAC_ADDRESS); // print the ESP's "ID"
+
+  #ifdef UNPHONE
+    printf("UNPHONE is defined\n");
+  #endif
+  #ifdef UNPHONE_SPIN
+    printf("UNPHONE_SPIN=%d\n", UNPHONE_SPIN);
+  #endif
+  #ifdef ARDUINO_FEATHER_ESP32
+    printf("ARDUINO_FEATHER_ESP32 is defined\n");
+  #endif
+
+  #ifdef ESP_IDF_VERSION_MAJOR
+    printf( // IDF version
+      "IDF version: %d.%d.%d\n",
+      ESP_IDF_VERSION_MAJOR, ESP_IDF_VERSION_MINOR, ESP_IDF_VERSION_PATCH
+    );
+  #endif
+  #ifdef ESP_ARDUINO_VERSION_MAJOR
+    printf(
+      "ESP_ARDUINO_VERSION_MAJOR=%d; MINOR=%d; PATCH=%d\n",
+      ESP_ARDUINO_VERSION_MAJOR, ESP_ARDUINO_VERSION_MINOR,
+      ESP_ARDUINO_VERSION_PATCH
+    );
+  #endif
+
+  #ifdef ARDUINO_ARCH_ESP32
+    printf("ARDUINO_ARCH_ESP32 is defined\n");
+  #endif
+  #ifdef ESP_PLATFORM
+    printf("ESP_PLATFORM is defined\n");
+  #endif
+  #ifdef ESP32
+    printf("ESP32 is defined\n");
+  #endif
+  #ifdef IDF_VER
+    printf("IDF_VER=%s\n", IDF_VER);
+  #endif
+  #ifdef ARDUINO
+    printf("ARDUINO=%d\n", ARDUINO);
+  #endif
+  #ifdef ARDUINO_BOARD
+    printf("ARDUINO_BOARD=%s\n", ARDUINO_BOARD);
+  #endif
+  #ifdef ARDUINO_VARIANT
+    printf("ARDUINO_VARIANT=%s\n", ARDUINO_VARIANT);
+  #endif
+  #ifdef ARDUINO_SERIAL_PORT
+    printf("ARDUINO_SERIAL_PORT=%d\n", ARDUINO_SERIAL_PORT);
+  #endif
+
+  #ifdef ARDUINO_IDE_BUILD
+    printf("ARDUINO_IDE_BUILD is defined\n");
+  #else
+    printf("no definition of ARDUINO_IDE_BUILD\n");
+  #endif
 }
