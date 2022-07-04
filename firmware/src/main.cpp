@@ -166,6 +166,12 @@ void setup()
 #ifdef RUN_DOTSTAR_WING
   dotstar_wing_setup();
 #endif
+
+  // unphone
+//#ifdef UNPHONE_SPIN
+  pinMode(2 /*EXPANDER_POWER*/, OUTPUT);
+  digitalWrite(2 /*EXPANDER_POWER*/, HIGH);
+//#endif
 }
 
 void loop()
