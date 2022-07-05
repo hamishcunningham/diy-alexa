@@ -144,9 +144,9 @@ void setup()
 
   // and the intent processor
   IntentProcessor *intent_processor = new IntentProcessor(speaker);
-  intent_processor->addDevice("kitchen", GPIO_NUM_4);
-  intent_processor->addDevice("bedroom", GPIO_NUM_26);
-  intent_processor->addDevice("table", GPIO_NUM_25);
+  intent_processor->addDevice("kitchen", LED_KITCHEN_PIN);
+  intent_processor->addDevice("bedroom", LED_BEDROOM_PIN);
+  intent_processor->addDevice("table", LED_TABLE_PIN);
 
   // create our application
   Application *application = new Application(i2s_sampler, intent_processor, speaker, indicator_light);
@@ -198,7 +198,7 @@ void getMAC(char *buf) { // the MAC is 6 bytes, so needs careful conversion...
 }
 
 void sayHi() {
-  printf("\nhi\n");
+  printf("\nHi there.\n");
   getMAC(MAC_ADDRESS);            // store the MAC address as a chip identifier
   Serial.printf("ESP32 MAC = %s\n", MAC_ADDRESS); // print the ESP's "ID"
 
@@ -256,4 +256,15 @@ void sayHi() {
   #else
     printf("no definition of ARDUINO_IDE_BUILD\n");
   #endif
+
+  printf("Marvin mic and speaker pins:\n");
+  printf("I2S_MIC_SERIAL_CLOCK=%d\n",           I2S_MIC_SERIAL_CLOCK);
+  printf("I2S_MIC_LEFT_RIGHT_CLOCK=%d\n",       I2S_MIC_LEFT_RIGHT_CLOCK);
+  printf("I2S_MIC_SERIAL_DATA=%d\n",            I2S_MIC_SERIAL_DATA);
+  printf("I2S_SPEAKER_SERIAL_CLOCK=%d\n",       I2S_SPEAKER_SERIAL_CLOCK);
+  printf("I2S_SPEAKER_LEFT_RIGHT_CLOCK=%d\n",   I2S_SPEAKER_LEFT_RIGHT_CLOCK);
+  printf("I2S_SPEAKER_SERIAL_DATA=%d\n",        I2S_SPEAKER_SERIAL_DATA);
+  printf("LED_KITCHEN_PIN=%d\n",                LED_KITCHEN_PIN);
+  printf("LED_BEDROOM_PIN=%d\n",                LED_BEDROOM_PIN);
+  printf("LED_TABLE_PIN=%d\n",                  LED_TABLE_PIN);
 }
