@@ -144,8 +144,9 @@ void setup()
 
   // and the intent processor
   IntentProcessor *intent_processor = new IntentProcessor(speaker);
-  intent_processor->addDevice("kitchen", GPIO_NUM_4);
+  // bedroom works on bare feather but not unphone due to pin clash
   intent_processor->addDevice("bedroom", GPIO_NUM_26);
+  intent_processor->addDevice("kitchen", GPIO_NUM_4);
   intent_processor->addDevice("table", GPIO_NUM_25);
 
   // create our application
