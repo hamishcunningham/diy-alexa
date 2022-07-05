@@ -145,6 +145,7 @@ void setup()
   // and the intent processor
   IntentProcessor *intent_processor = new IntentProcessor(speaker);
   intent_processor->addDevice("kitchen", LED_KITCHEN_PIN);
+  // bedroom works on bare feather but not unphone due to pin clash
   intent_processor->addDevice("bedroom", LED_BEDROOM_PIN);
   intent_processor->addDevice("table", LED_TABLE_PIN);
 
