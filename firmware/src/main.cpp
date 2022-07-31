@@ -14,12 +14,20 @@
 #include "IndicatorLight.h"
 #include <WiFiMulti.h>
 #include <dotstar_wing.h>
+#include <unphone.h>
+#include "UIController.h"
 
 // MAC address etc. //////////////////////////////////////////////////////////
 void sayHi();
 extern char MAC_ADDRESS[];
+/*
 void getMAC(char *);
 char MAC_ADDRESS[13]; // MAC addresses are 12 chars, plus the NULL terminator
+*/
+UIController *uiCont;
+int firmwareVersion = 1; // keep up-to-date! (used to check for updates)
+String apSSID = String("marvin-unphone-");         // SSID of the AP
+int loopIter = 0;
 
 WiFiMulti wifiMulti;
 
@@ -87,6 +95,7 @@ void setup()
   Serial.begin(115200);
   delay(1000);
   Serial.println("Starting up");
+  Serial.printf("UNPHONE_SPIN = %d\n", UNPHONE_SPIN);
   // start up wifi
   // launch WiFi
   /*
@@ -108,6 +117,40 @@ void setup()
       delay(200);
     }
   }
+
+  // unphone 2022 stuff ////////////////////////////////////////////////////
+  unPhone::begin();
+
+  // power management
+  unPhone::printWakeupReason(); // what woke us up?
+  unPhone::checkPowerSwitch();  // if power switch is off, shutdown
+  Serial.printf("battery voltage = %3.3f\n", unPhone::batteryVoltage());
+  unPhone::expanderPower(true); // turn expander power on
+
+  // flash the internal RGB LED and then the IR_LEDs
+  unPhone::rgb(0, 0, 0); delay(300); unPhone::rgb(0, 0, 1); delay(300);
+  unPhone::rgb(0, 1, 1); delay(300); unPhone::rgb(1, 0, 1); delay(300);
+  unPhone::rgb(1, 1, 0); delay(300); unPhone::rgb(1, 1, 1); delay(300);
+  for(uint8_t i = 0; i<4; i++) {
+    digitalWrite(unPhone::IR_LEDS, HIGH); delay(300);
+    digitalWrite(unPhone::IR_LEDS, LOW); delay(300);
+  }
+
+  // display the first screen
+  uiCont = new UIController(ui_configure);
+  if(uiCont == NULL || !uiCont->begin())
+    E("WARNING: ui.begin failed!\n")
+
+  // buzz a bit
+  for(int i = 0; i < 3; i++) {
+    unPhone::vibe(true);  delay(150);
+    unPhone::vibe(false); delay(150);
+  }
+
+  UIController::provisioned = true; // tell the controller done provisioning
+  uiCont->redraw();             // perhaps we're on wifi now, redraw
+  // unphone stuff end /////////////////////////////////////////////////////
+
   sayHi();
 
   Serial.printf("ssid=%s\n", WIFI_SSID);
@@ -183,8 +226,30 @@ void loop()
 #else
   vTaskDelay(1000);
 #endif
+
+
+
+  while(1) {
+if(dotstar_wing_state_on()) dotstar_wing_loop();
+    micros(); // update overflow
+    uiCont->run();
+    unPhone::checkPowerSwitch(); // if power switch is off shutdown
+
+    // allow the protocol CPU IDLE task to run periodically
+    loopIter++;
+    if(loopIter % 2500 == 0) {
+      if(loopIter % 25000 == 0) {
+        D("completed loop %d, yielding 1000th time since last\n", loopIter)
+
+        delay(100); // 100 appears min to allow IDLE task to fire
+      }
+    }
+  }
+
+
 }
 
+/*
 void getMAC(char *buf) { // the MAC is 6 bytes, so needs careful conversion...
   uint64_t mac = ESP.getEfuseMac(); // ...to string (high 2, low 4):
   char rev[13];
@@ -197,10 +262,11 @@ void getMAC(char *buf) { // the MAC is 6 bytes, so needs careful conversion...
   }
   buf[12] = '\0';
 }
+*/
 
 void sayHi() {
   printf("\nHi there.\n");
-  getMAC(MAC_ADDRESS);            // store the MAC address as a chip identifier
+  unPhone::getMAC(MAC_ADDRESS);            // store the MAC address as a chip identifier
   Serial.printf("ESP32 MAC = %s\n", MAC_ADDRESS); // print the ESP's "ID"
 
   #ifdef UNPHONE
