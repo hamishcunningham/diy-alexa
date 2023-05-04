@@ -1,18 +1,21 @@
 #include "ADCSampler.h"
 #include "driver/i2s.h"
-#include "driver/adc.h"
 
-ADCSampler::ADCSampler(adc_unit_t adcUnit, adc1_channel_t adcChannel) : I2SSampler()
+ADCSampler::ADCSampler(adc1_channel_t adcChannel) : I2SSampler()
 {
-    m_adcUnit = adcUnit;
     m_adcChannel = adcChannel;
 }
 
 void ADCSampler::configureI2S()
 {
-    //init ADC pad
-    i2s_set_adc_mode(m_adcUnit, m_adcChannel);
-    // enable the adc
+    // Configure ADC1 channel
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(m_adcChannel, ADC_ATTEN_DB_11);
+
+    // Configure I2S for ADC1
+    i2s_set_adc_mode(ADC_UNIT_1, m_adcChannel);
+
+    // Enable the ADC
     i2s_adc_enable(getI2SPort());
 }
 
