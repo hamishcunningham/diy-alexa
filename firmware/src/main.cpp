@@ -173,6 +173,8 @@ void setup()
   pinMode(2 /*EXPANDER_POWER*/, OUTPUT);
   digitalWrite(2 /*EXPANDER_POWER*/, HIGH);
 //#endif
+
+  WiFi.printDiag(Serial);
 }
 
 void loop()
